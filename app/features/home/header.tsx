@@ -1,13 +1,32 @@
-import {Pole} from "@/app/features/helper/Pole";
+"use client";
+
+import HeaderPoles from "@/app/features/home/components/header/poles";
+import HeaderText from "@/app/features/home/components/header/text";
+import {Pole} from "@/app/features/home/helper/Pole";
+import {motion} from "framer-motion";
+import {useState} from "react";
 
 export default function HomeHeader() {
+  const [animationEnd, SetAnimationEnd] = useState(false);
+
   return (
-    <div className="relative flex justify-center h-svh w-svw overflow-hidden">
-      <Pole position={{top: 10, lr: "left-[4rem]"}} />
-      <Pole position={{top: 32, lr: "left-[10rem]"}} />
-      <Pole position={{top: 8, lr: "right-[4rem]"}} />
-      <Pole position={{top: 34, lr: "right-[14rem]"}} />
-      <div className="max-w-pc w-full"></div>
-    </div>
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: animationEnd ? 0 : 1}}
+      transition={{ease: "easeInOut", duration: 3}}
+      className="flex justify-center h-svh w-svw overflow-hidden"
+    >
+      <HeaderPoles />
+      <div className="flex flex-col justify-center max-w-pc w-full">
+        <HeaderText />
+        <Pole
+          width={10}
+          position={{top: 38, lr: "right-[calc(50svw-5rem)]"}}
+          color="white"
+          SetAnimationEnd={SetAnimationEnd}
+          clickable
+        />
+      </div>
+    </motion.div>
   );
 }
