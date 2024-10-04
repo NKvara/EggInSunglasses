@@ -1,6 +1,6 @@
 "use client";
 
-import {cn} from "@/app/features/lib/utils";
+import { cn } from "@/features/lib/utils";
 import {motion} from "framer-motion";
 import {Dispatch, SetStateAction, useState} from "react";
 

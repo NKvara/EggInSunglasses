@@ -1,5 +1,5 @@
+import { Pole } from "@/features/home/helper/Pole";
 import React from "react";
-import {Pole} from "@/app/features/home/helper/Pole";
 
 export default function HeaderPoles() {
   return (

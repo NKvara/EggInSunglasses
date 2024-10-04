@@ -1,8 +1,8 @@
-import HomeHeader from "@/app/features/home/header";
+import HomeHeader from "@/features/home/header";
 
 export default function Home() {
   return (
-    <div className="">
+    <div>
       <HomeHeader />
     </div>
   );

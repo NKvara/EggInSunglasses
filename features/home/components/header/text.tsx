@@ -1,12 +1,13 @@
+import { SparklesCore } from "@/features/ui/sparkles";
 import React from "react";
-import {SparklesCore} from "@/app/features/ui/sparkles";
 
 export default function HeaderText() {
   return (
     <div className="flex flex-col items-center justify-center overflow-hidden pointer-events-none">
-      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative -z-10">
-        Welcome
+      <h1 className="text-6xl font-bold text-center text-white relative -z-10">
+        Nika Kvaratskhelia
       </h1>
+      <p className="text-xl text-gray-400 font-bold">Front-End Developer</p>
       <div className="w-[40rem] h-40 relative -z-20">
         {/* Gradients */}
         <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-[#43618a] to-transparent h-[2px] w-3/4 blur-sm" />
