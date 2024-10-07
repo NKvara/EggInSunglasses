@@ -1,7 +1,7 @@
 "use client";
 
 import useMousePosition from "@/features/hooks/useMousePosition";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {useHover} from "usehooks-ts";
 import {
   DRAG_PIXELS,
@@ -9,7 +9,15 @@ import {
   MIN_WIDTH
 } from "@/features/desktop/helper/const";
 
-export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
+export default function WindowManager({
+  children,
+  mouseDown,
+  title
+}: {
+  children: ReactNode;
+  mouseDown: boolean;
+  title: string;
+}) {
   const [windowSize, setWindowSize] = useState({h: 400, w: 400});
   const [windowPosition, setWindowPosition] = useState({x: 0, y: 0});
   const [initialPosition, setInitialPosition] = useState({
@@ -18,7 +26,7 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
     window: {h: windowSize.h, w: windowSize.w}
   });
   const [moveEnable, setMoveEnable] = useState(false);
-  const [drag, setDrag] = useState("default");
+  const [drag, setDrag] = useState("");
   const mousePosition = useMousePosition();
   const mainRef = useRef<HTMLDivElement>(null);
   const isHover = useHover(mainRef);
@@ -38,27 +46,28 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
         mousePosition.y >= initialPosition.div.y + windowSize.h - DRAG_PIXELS &&
         mousePosition.y <= initialPosition.div.y + windowSize.h;
 
-      return {
-        l: left,
-        r: right,
-        t: top,
-        b: bottom,
-        tl: top && left,
-        tr: top && right,
-        bl: bottom && left,
-        br: bottom && right
-      };
+      switch (true) {
+        case top && right:
+          return "ne-resize";
+        case bottom && right:
+          return "se-resize";
+        case bottom && left:
+          return "sw-resize";
+        case top && left:
+          return "nw-resize";
+        case top:
+          return "n-resize";
+        case right:
+          return "e-resize";
+        case bottom:
+          return "s-resize";
+        case left:
+          return "w-resize";
+        default:
+          return "";
+      }
     }
-    return {
-      l: false,
-      r: false,
-      t: false,
-      b: false,
-      tl: false,
-      tr: false,
-      bl: false,
-      br: false
-    };
+    return "";
   }, [
     initialPosition.div.x,
     initialPosition.div.y,
@@ -69,29 +78,6 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
     windowSize.h,
     windowSize.w
   ]);
-
-  const isSizing = useCallback(() => {
-    switch (true) {
-      case isEdge().tr:
-        return "ne-resize";
-      case isEdge().br:
-        return "se-resize";
-      case isEdge().bl:
-        return "sw-resize";
-      case isEdge().tl:
-        return "nw-resize";
-      case isEdge().t:
-        return "n-resize";
-      case isEdge().r:
-        return "e-resize";
-      case isEdge().b:
-        return "s-resize";
-      case isEdge().l:
-        return "w-resize";
-      default:
-        return "default";
-    }
-  }, [isEdge]);
 
   const setInitials = (e?: DOMRect) => {
     setWindowSize({
@@ -111,10 +97,10 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
   };
 
   useEffect(() => {
-    if (isSizing() !== "default" && mouseDown) {
-      setDrag(isSizing());
-    } else if (drag !== "default" && !mouseDown) {
-      setDrag("default");
+    if (isEdge() !== "" && mouseDown) {
+      setDrag(isEdge());
+    } else if (drag !== "" && !mouseDown) {
+      setDrag("");
       setInitials();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,7 +126,7 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
 
   //resize the window
   useEffect(() => {
-    if (drag !== "default") {
+    if (drag !== "") {
       const widthChange =
         initialPosition.window.w + (mousePosition.x - initialPosition.cursor.x);
       const heightChange =
@@ -263,9 +249,10 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
   return (
     <div
       ref={mainRef}
-      className="absolute flex flex-col p-[1px] bg-black"
+      tabIndex={0}
+      className="absolute flex flex-col p-[1px] bg-black group z-20 focus:z-30"
       onMouseDown={(e) => {
-        if (isSizing() !== "default") {
+        if (isEdge() !== "") {
           setInitials(e.currentTarget.getBoundingClientRect());
         }
       }}
@@ -276,15 +263,22 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
         left: windowPosition.x,
         minHeight: MIN_WIDTH,
         minWidth: MIN_HEIGHT,
-        cursor: isSizing()
+        cursor: drag || isEdge()
       }}
     >
+      {mouseDown && drag && (
+        <div
+          className="fixed top-0 left-0 z-[100] w-svw h-svh"
+          style={{cursor: drag}}
+        />
+      )}
+      <div />
       <div
         id="topbar"
-        className="w-full h-8 min-h-8 bg-slate-500"
-        onMouseDown={() => {
-          if (isSizing() === "default") {
-            setInitials();
+        className="w-full h-8 min-h-8 bg-slate-400 group-focus:bg-slate-500 flex items-center"
+        onMouseDown={(e) => {
+          if (isEdge() === "") {
+            setInitials(e.currentTarget.parentElement?.getBoundingClientRect());
             setMoveEnable(true);
           }
         }}
@@ -292,11 +286,12 @@ export default function WindowManager({mouseDown}: {mouseDown: boolean}) {
           setInitials(e.currentTarget.parentElement?.getBoundingClientRect());
           setMoveEnable(false);
         }}
-      />
-
-      <div className="flex justify-center items-center w-full h-full bg-white overflow-y-scroll">
-        dynamic stuff here
+      >
+        <p className="text-sm text-white font-bold capitalize pointer-events-none select-none">
+          {title}
+        </p>
       </div>
+      {children}
     </div>
   );
 }
