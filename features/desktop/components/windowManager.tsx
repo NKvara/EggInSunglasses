@@ -8,43 +8,63 @@ import {
   MIN_HEIGHT,
   MIN_WIDTH
 } from "@/features/desktop/helper/const";
+import {motion} from "framer-motion";
+import Toolbar from "@/features/desktop/components/toolbar";
 
 export default function WindowManager({
   children,
   mouseDown,
-  title
+  title,
+  init,
+  onClose
 }: {
   children: ReactNode;
   mouseDown: boolean;
   title: string;
+  init?: {position?: {x: number; y: number}; size?: {w: number; h: number}};
+  onClose: () => void;
 }) {
-  const [windowSize, setWindowSize] = useState({h: 400, w: 400});
-  const [windowPosition, setWindowPosition] = useState({x: 0, y: 0});
+  const [windowSize, setWindowSize] = useState({
+    h: init?.size?.h || 400,
+    w: init?.size?.w || 400
+  });
+  const [windowPosition, setWindowPosition] = useState({
+    x: init?.position?.x || 0,
+    y: init?.position?.y || 0
+  });
   const [initialPosition, setInitialPosition] = useState({
-    div: {x: 0, y: 0, r: windowSize.w, b: windowSize.h},
+    div: {
+      x: windowPosition.x,
+      y: windowPosition.y,
+      r: windowSize.w,
+      b: windowSize.h
+    },
     cursor: {x: 0, y: 0},
     window: {h: windowSize.h, w: windowSize.w}
   });
+  const mousePosition = useMousePosition();
   const [moveEnable, setMoveEnable] = useState(false);
   const [drag, setDrag] = useState("");
-  const mousePosition = useMousePosition();
+
+  const [close, setClose] = useState(false);
+
   const mainRef = useRef<HTMLDivElement>(null);
   const isHover = useHover(mainRef);
 
   const isEdge = useCallback(() => {
     if (isHover && !moveEnable) {
       const left =
-        mousePosition.x >= initialPosition.div.x &&
-        mousePosition.x <= initialPosition.div.x + DRAG_PIXELS;
+        mousePosition.x >= windowPosition.x &&
+        mousePosition.x <= windowPosition.x + DRAG_PIXELS;
       const right =
-        mousePosition.x >= initialPosition.div.x + windowSize.w - DRAG_PIXELS &&
-        mousePosition.x <= initialPosition.div.x + windowSize.w;
+        mousePosition.x >= windowPosition.x + windowSize.w - DRAG_PIXELS &&
+        mousePosition.x <= windowPosition.x + windowSize.w;
       const top =
-        mousePosition.y >= initialPosition.div.y &&
-        mousePosition.y <= initialPosition.div.y + DRAG_PIXELS;
+        mousePosition.y >= windowPosition.y &&
+        mousePosition.y <= windowPosition.y + DRAG_PIXELS;
       const bottom =
-        mousePosition.y >= initialPosition.div.y + windowSize.h - DRAG_PIXELS &&
-        mousePosition.y <= initialPosition.div.y + windowSize.h;
+        mousePosition.y >= windowPosition.y + windowSize.h - DRAG_PIXELS &&
+        mousePosition.y <= windowPosition.y + windowSize.h;
 
       switch (true) {
         case top && right:
@@ -69,32 +89,59 @@ export default function WindowManager({
     }
     return "";
   }, [
-    initialPosition.div.x,
-    initialPosition.div.y,
     isHover,
     mousePosition.x,
     mousePosition.y,
     moveEnable,
+    windowPosition.x,
+    windowPosition.y,
     windowSize.h,
     windowSize.w
   ]);
 
-  const setInitials = (e?: DOMRect) => {
-    setWindowSize({
-      h: mainRef!.current!.clientHeight,
-      w: mainRef!.current!.clientWidth
-    });
-    setInitialPosition({
-      div: {
-        x: e?.x || mainRef!.current!.getBoundingClientRect().x,
-        y: e?.y || mainRef!.current!.getBoundingClientRect().y,
-        r: e?.right || mainRef!.current!.getBoundingClientRect().right,
-        b: e?.bottom || mainRef!.current!.getBoundingClientRect().bottom
-      },
-      cursor: {x: mousePosition.x, y: mousePosition.y},
-      window: {h: windowSize.h, w: windowSize.w}
-    });
-  };
+  const setInitials = useCallback(
+    (e?: DOMRect) => {
+      setWindowSize({
+        h: mainRef!.current!.clientHeight,
+        w: mainRef!.current!.clientWidth
+      });
+      setInitialPosition({
+        div: {
+          x: e?.x || mainRef!.current!.getBoundingClientRect().x,
+          y: e?.y || mainRef!.current!.getBoundingClientRect().y,
+          r: e?.right || mainRef!.current!.getBoundingClientRect().right,
+          b: e?.bottom || mainRef!.current!.getBoundingClientRect().bottom
+        },
+        cursor: {x: mousePosition.x, y: mousePosition.y},
+        window: {h: windowSize.h, w: windowSize.w}
+      });
+    },
+    [mousePosition.x, mousePosition.y, windowSize.h, windowSize.w]
+  );
+
+  useEffect(() => {
+    if (moveEnable) {
+      if (!mouseDown) {
+        setInitials();
+        setMoveEnable(false);
+      }
+      setWindowPosition({
+        x: mousePosition.x + (initialPosition.div.x - initialPosition.cursor.x),
+        y: mousePosition.y + (initialPosition.div.y - initialPosition.cursor.y)
+      });
+    }
+  }, [
+    initialPosition,
+    initialPosition.cursor.x,
+    initialPosition.cursor.y,
+    initialPosition.div.x,
+    initialPosition.div.y,
+    mouseDown,
+    mousePosition.x,
+    mousePosition.y,
+    moveEnable,
+    setInitials
+  ]);
 
   useEffect(() => {
     if (isEdge() !== "" && mouseDown) {
@@ -107,22 +154,6 @@ export default function WindowManager({
   }, [mouseDown]);
 
   //move the window
-  useEffect(() => {
-    if (moveEnable) {
-      setWindowPosition({
-        x: mousePosition.x + (initialPosition.div.x - initialPosition.cursor.x),
-        y: mousePosition.y + (initialPosition.div.y - initialPosition.cursor.y)
-      });
-    }
-  }, [
-    initialPosition.cursor.x,
-    initialPosition.cursor.y,
-    initialPosition.div.x,
-    initialPosition.div.y,
-    mousePosition.x,
-    mousePosition.y,
-    moveEnable
-  ]);
 
   //resize the window
   useEffect(() => {
@@ -247,10 +278,14 @@ export default function WindowManager({
   }, [drag, mousePosition.y, mousePosition.x]);
 
   return (
-    <div
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: close ? 0 : 1}}
+      onAnimationComplete={() => close && onClose()}
+      id={title}
       ref={mainRef}
       tabIndex={0}
-      className="absolute flex flex-col p-[1px] bg-black group z-20 focus:z-30"
+      className="absolute flex flex-col p-[2px] bg-black group z-20 focus:z-30"
       onMouseDown={(e) => {
         if (isEdge() !== "") {
           setInitials(e.currentTarget.getBoundingClientRect());
@@ -268,30 +303,19 @@ export default function WindowManager({
     >
       {mouseDown && drag && (
         <div
-          className="fixed top-0 left-0 z-[100] w-svw h-svh"
+          className="fixed top-0 left-0 z-[9999] w-svw h-svh"
           style={{cursor: drag}}
         />
       )}
       <div />
-      <div
-        id="topbar"
-        className="w-full h-8 min-h-8 bg-slate-400 group-focus:bg-slate-500 flex items-center"
-        onMouseDown={(e) => {
-          if (isEdge() === "") {
-            setInitials(e.currentTarget.parentElement?.getBoundingClientRect());
-            setMoveEnable(true);
-          }
-        }}
-        onMouseUp={(e) => {
-          setInitials(e.currentTarget.parentElement?.getBoundingClientRect());
-          setMoveEnable(false);
-        }}
-      >
-        <p className="text-sm text-white font-bold capitalize pointer-events-none select-none">
-          {title}
-        </p>
-      </div>
+      <Toolbar
+        isEdge={isEdge() === ""}
+        setClose={setClose}
+        setInitials={setInitials}
+        setMoveEnable={setMoveEnable}
+        title={title}
+      />
       {children}
-    </div>
+    </motion.div>
   );
 }
