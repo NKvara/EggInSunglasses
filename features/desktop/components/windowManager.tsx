@@ -5,8 +5,6 @@ import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {useHover} from "usehooks-ts";
 import {
   DRAG_PIXELS,
-  MIN_HEIGHT,
-  MIN_WIDTH
 } from "@/features/desktop/helper/const";
 import {motion} from "framer-motion";
 import Toolbar from "@/features/desktop/components/toolbar";
@@ -16,17 +14,24 @@ export default function WindowManager({
   mouseDown,
   title,
   init,
-  onClose
+  min,
+  onClose,
+  gIndexCount,
+  setGIndexCount
 }: {
   children: ReactNode;
   mouseDown: boolean;
   title: string;
-  init?: {position?: {x: number; y: number}; size?: {w: number; h: number}};
+  init?: {position?: {x: number; y: number}};
+  min: {size: {w: number; h: number}};
   onClose: () => void;
+  gIndexCount: number;
+  setGIndexCount: () => void;
 }) {
+  const [indexCount, setIndexCount] = useState(gIndexCount);
   const [windowSize, setWindowSize] = useState({
-    h: init?.size?.h || 400,
-    w: init?.size?.w || 400
+    h: min.size.h,
+    w: min.size.w
   });
   const [windowPosition, setWindowPosition] = useState({
     x: init?.position?.x || 0,
@@ -120,6 +125,11 @@ export default function WindowManager({
   );
 
   useEffect(() => {
+    setGIndexCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (moveEnable) {
       if (!mouseDown) {
         setInitials();
@@ -153,8 +163,6 @@ export default function WindowManager({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mouseDown]);
 
-  //move the window
-
   //resize the window
   useEffect(() => {
     if (drag !== "") {
@@ -171,18 +179,18 @@ export default function WindowManager({
         case "ne-resize":
           setWindowSize({
             h:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? negativeHeightChange
-                : MIN_HEIGHT,
+                : min.size.h,
             w: widthChange
           });
           setWindowPosition({
             ...windowPosition,
             y:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? initialPosition.div.y +
                   (mousePosition.y - initialPosition.cursor.y)
-                : initialPosition.div.b - MIN_HEIGHT
+                : initialPosition.div.b - min.size.h
           });
           break;
         case "se-resize":
@@ -194,54 +202,54 @@ export default function WindowManager({
         case "sw-resize":
           setWindowSize({
             w:
-              negativeWidthChange > MIN_WIDTH ? negativeWidthChange : MIN_WIDTH,
+              negativeWidthChange > min.size.w ? negativeWidthChange : min.size.w,
             h: heightChange
           });
           setWindowPosition({
             ...windowPosition,
             x:
-              negativeWidthChange > MIN_WIDTH
+              negativeWidthChange > min.size.w
                 ? initialPosition.div.x +
                   (mousePosition.x - initialPosition.cursor.x)
-                : initialPosition.div.r - MIN_WIDTH
+                : initialPosition.div.r - min.size.w
           });
           break;
         case "nw-resize":
           setWindowSize({
             h:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? negativeHeightChange
-                : MIN_HEIGHT,
-            w: negativeWidthChange > MIN_WIDTH ? negativeWidthChange : MIN_WIDTH
+                : min.size.h,
+            w: negativeWidthChange > min.size.w ? negativeWidthChange : min.size.w
           });
           setWindowPosition({
             y:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? initialPosition.div.y +
                   (mousePosition.y - initialPosition.cursor.y)
-                : initialPosition.div.b - MIN_HEIGHT,
+                : initialPosition.div.b - min.size.h,
             x:
-              negativeWidthChange > MIN_WIDTH
+              negativeWidthChange > min.size.w
                 ? initialPosition.div.x +
                   (mousePosition.x - initialPosition.cursor.x)
-                : initialPosition.div.r - MIN_WIDTH
+                : initialPosition.div.r - min.size.w
           });
           break;
         case "n-resize":
           setWindowSize({
             ...windowSize,
             h:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? negativeHeightChange
-                : MIN_HEIGHT
+                : min.size.h
           });
           setWindowPosition({
             ...windowPosition,
             y:
-              negativeHeightChange > MIN_HEIGHT
+              negativeHeightChange > min.size.h
                 ? initialPosition.div.y +
                   (mousePosition.y - initialPosition.cursor.y)
-                : initialPosition.div.b - MIN_HEIGHT
+                : initialPosition.div.b - min.size.h
           });
           break;
         case "e-resize":
@@ -259,15 +267,15 @@ export default function WindowManager({
         case "w-resize":
           setWindowSize({
             ...windowSize,
-            w: negativeWidthChange > MIN_WIDTH ? negativeWidthChange : MIN_WIDTH
+            w: negativeWidthChange > min.size.w ? negativeWidthChange : min.size.w
           });
           setWindowPosition({
             ...windowPosition,
             x:
-              negativeWidthChange > MIN_WIDTH
+              negativeWidthChange > min.size.w
                 ? initialPosition.div.x +
                   (mousePosition.x - initialPosition.cursor.x)
-                : initialPosition.div.r - MIN_WIDTH
+                : initialPosition.div.r - min.size.w
           });
           break;
         default:
@@ -278,44 +286,48 @@ export default function WindowManager({
   }, [drag, mousePosition.y, mousePosition.x]);
 
   return (
-    <motion.div
-      initial={{opacity: 0}}
-      animate={{opacity: close ? 0 : 1}}
-      onAnimationComplete={() => close && onClose()}
-      id={title}
-      ref={mainRef}
-      tabIndex={0}
-      className="absolute flex flex-col p-[2px] bg-black group z-20 focus:z-30"
-      onMouseDown={(e) => {
-        if (isEdge() !== "") {
-          setInitials(e.currentTarget.getBoundingClientRect());
-        }
-      }}
-      style={{
-        width: windowSize.w,
-        height: windowSize.h,
-        top: windowPosition.y,
-        left: windowPosition.x,
-        minHeight: MIN_WIDTH,
-        minWidth: MIN_HEIGHT,
-        cursor: drag || isEdge()
-      }}
-    >
+    <div>
       {mouseDown && drag && (
         <div
           className="fixed top-0 left-0 z-[9999] w-svw h-svh"
           style={{cursor: drag}}
         />
       )}
-      <div />
-      <Toolbar
-        isEdge={isEdge() === ""}
-        setClose={setClose}
-        setInitials={setInitials}
-        setMoveEnable={setMoveEnable}
-        title={title}
-      />
-      {children}
-    </motion.div>
+      <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: close ? 0 : 1}}
+        onAnimationComplete={() => close && onClose()}
+        id={title}
+        ref={mainRef}
+        tabIndex={0}
+        className="absolute flex flex-col p-[2px] bg-black group"
+        onMouseDown={(e) => {
+          setIndexCount(gIndexCount);
+          setGIndexCount();
+          if (isEdge() !== "") {
+            setInitials(e.currentTarget.getBoundingClientRect());
+          }
+        }}
+        style={{
+          width: windowSize.w,
+          height: windowSize.h,
+          top: windowPosition.y,
+          left: windowPosition.x,
+          minHeight: min.size.h,
+          minWidth: min.size.w,
+          cursor: drag || isEdge(),
+          zIndex: 20 + indexCount
+        }}
+      >
+        <Toolbar
+          isEdge={isEdge() === ""}
+          setClose={setClose}
+          setInitials={setInitials}
+          setMoveEnable={setMoveEnable}
+          title={title}
+        />
+        {children}
+      </motion.div>
+    </div>
   );
 }

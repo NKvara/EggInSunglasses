@@ -5,12 +5,14 @@ export const shortcuts = [
     icon: "/images/desktop/web.png",
     title: "about",
     app: <About />,
-    init: {position: {x: 200, y: 200}, size: {w: 0, h: 0}}
+    init: {position: {x: 200, y: 200}},
+    minSize: {w: 400, h: 600}
   },
   {
     icon: "/images/desktop/web.png",
     title: "minesweeper",
     app: <div />,
-    init: {position: {x: 150, y: 150}, size: {w: 0, h: 0}}
+    init: {position: {x: 150, y: 150}},
+    minSize: {w: 400, h: 400}
   }
 ];

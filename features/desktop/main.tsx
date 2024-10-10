@@ -9,6 +9,7 @@ export default function DesktopMain() {
   const [mouseDown, setMouseDown] = useState(false);
   const overlayDivRef = useRef<HTMLDivElement | null>(null);
   const [windows, setWindows] = useState<typeof shortcuts>([]);
+  const [gIndexCount, setGIndexCount] = useState(0);
 
   useEffect(() => {
     const handleMouseDownOverlay = () => {
@@ -46,11 +47,6 @@ export default function DesktopMain() {
       className="w-svw h-svh flex flex-col justify-between bg-indigo-200 bg-repeat bg-bottom"
       // style={{backgroundImage: `url('/images/desktop/bg.png')`}}
     >
-      <div
-        className="w-full h-full absolute z-50 pointer-events-none"
-        onMouseDown={() => setMouseDown(true)}
-        onMouseUp={() => setMouseDown(false)}
-      />
       <div className="relative h-full w-full overflow-hidden p-6">
         <div className="flex flex-col h-full gap-2">
           {shortcuts.map((o, i) => {
@@ -76,9 +72,13 @@ export default function DesktopMain() {
             key={o.title}
             title={o.title}
             mouseDown={mouseDown}
+            gIndexCount={gIndexCount}
+            setGIndexCount={() => setGIndexCount(gIndexCount + 1)}
             init={{
               position: {x: o.init.position.x, y: o.init.position.y},
-              size: {h: o.init.size.h, w: o.init.size.w}
+            }}
+            min={{
+              size: {w: o.minSize.w, h: o.minSize.h}
             }}
             onClose={() => {
               setWindows(windows.filter((obj) => obj.title !== o.title));
