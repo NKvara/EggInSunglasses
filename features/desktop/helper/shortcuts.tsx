@@ -1,5 +1,6 @@
 import About from "@/features/desktop/apps/about";
 import Browser from "@/features/desktop/apps/browser";
+import Minesweeper from '@/features/desktop/apps/minesweeper/index';
 
 export const shortcuts = [
   {
@@ -12,7 +13,7 @@ export const shortcuts = [
   {
     icon: "/images/desktop/web.png",
     title: "minesweeper",
-    app: <div />,
+    app: <Minesweeper />,
     init: {position: {x: 150, y: 150}},
     minSize: {w: 400, h: 400}
   },
