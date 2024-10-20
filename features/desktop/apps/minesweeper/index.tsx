@@ -2,7 +2,7 @@ import Cell from "@/features/desktop/apps/minesweeper/cell";
 import {useEffect, useState} from "react";
 
 export default function Minesweeper() {
-  const [settings] = useState({mines: 5, rows: 12, cols: 12});
+  const [settings] = useState({mines: 2, rows: 30, cols: 24});
 
   const [realBoard, setRealBoard] = useState([[""]]);
 
@@ -144,29 +144,32 @@ export default function Minesweeper() {
   }, []);
 
   return (
-    <div className="flex justify-center w-full h-full bg-red-200">
-      <div
-        className="flex flex-wrap bg-black"
-        style={{aspectRatio: `${settings.cols} / ${settings.rows}`}}
-      >
-        {land.map((o, i) => {
-          return o.map((e, j) => (
-            <div
-              className={`bg-slate-300 border-2 border-black aspect-square`}
-              style={{width: `${100 / settings.cols}%`}}
-              key={"land-" + i + j}
-              onClick={() => {
-                updateArray({i, j});
-              }}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                flag({i, j});
-              }}
-            >
-              <Cell type={e} />
-            </div>
-          ));
-        })}
+    <div className="flex justify-center w-full h-full bg-red-200 overflow-hidden">
+      <div className="flex flex-col justify-center items-center h-full w-3/4">
+        <div className="h-8" />
+        <div
+          className="flex flex-wrap bg-black max-w-2xl w-full"
+          style={{aspectRatio: `${settings.cols} / ${settings.rows}`}}
+        >
+          {land.map((o, i) => {
+            return o.map((e, j) => (
+              <div
+                className={`bg-slate-300 border-2 border-black aspect-square`}
+                style={{width: `${100 / settings.cols}%`}}
+                key={"land-" + i + j}
+                onClick={() => {
+                  updateArray({i, j});
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  flag({i, j});
+                }}
+              >
+                <Cell type={e} />
+              </div>
+            ));
+          })}
+        </div>
       </div>
     </div>
   );
