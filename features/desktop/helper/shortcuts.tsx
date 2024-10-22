@@ -15,13 +15,13 @@ export const shortcuts = [
     title: "minesweeper",
     app: <Minesweeper />,
     init: {position: {x: 150, y: 150}},
-    minSize: {w: 400, h: 400}
+    minSize: {w: 576, h: 540}
   },
   {
     icon: "/images/desktop/hampster.png",
     title: "Best Video",
     app: <Browser />,
-    init: {position: {x: 800, y: 400}},
+    init: {position: {x: 100, y: 100}},
     minSize: {w: 800, h: 600}
   }
 ];

@@ -44,23 +44,41 @@ export default function DesktopMain() {
   return (
     <div
       ref={overlayDivRef}
-      className="w-svw h-svh flex flex-col justify-between bg-indigo-200 bg-repeat bg-bottom"
-      // style={{backgroundImage: `url('/images/desktop/bg.png')`}}
+      className="w-svw h-svh flex flex-col justify-between bg-EWhite"
+      // style={{backgroundImage: `url('/images/desktop/cement.jpg')`}}
     >
       <div className="relative h-full w-full overflow-hidden p-6">
-        <div className="flex flex-col h-full gap-2">
+        <div className="flex flex-col items-end h-full gap-8">
           {shortcuts.map((o, i) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const [isFocused, setIsFocused] = useState(false);
             return (
               <div
                 tabIndex={i}
                 key={o.title}
-                onDoubleClick={() => handleClick(o)}
-                className="flex flex-col justify-center items-center max-w-24 w-full h-32 gap-1 group"
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                className="flex flex-col justify-center items-center max-w-24 w-full h-16 gap-1 group select-none"
               >
-                <div className="relative w-16 aspect-square filter">
-                  <Image src={o.icon} fill alt={o.title} />
+                <div
+                  className="relative w-8 aspect-square cursor-pointer"
+                  onDoubleClick={() => handleClick(o)}
+                >
+                  <Image
+                    src={o.icon}
+                    fill
+                    alt={o.title}
+                    style={{
+                      filter: isFocused
+                        ? "brightness(.5) sepia(100%) saturate(8)"
+                        : ""
+                    }}
+                  />
                 </div>
-                <div className="text-white text-center text-sm line-clamp-2 group-focus:bg-blue-600">
+                <div
+                  className="text-black text-center text-xs line-clamp-2 group-focus:bg-EOrange cursor-pointer"
+                  onDoubleClick={() => handleClick(o)}
+                >
                   {o.title}
                 </div>
               </div>
@@ -75,7 +93,7 @@ export default function DesktopMain() {
             gIndexCount={gIndexCount}
             setGIndexCount={() => setGIndexCount(gIndexCount + 1)}
             init={{
-              position: {x: o.init.position.x, y: o.init.position.y},
+              position: {x: o.init.position.x, y: o.init.position.y}
             }}
             min={{
               size: {w: o.minSize.w, h: o.minSize.h}

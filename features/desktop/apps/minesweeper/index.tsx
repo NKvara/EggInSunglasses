@@ -2,8 +2,7 @@ import Cell from "@/features/desktop/apps/minesweeper/cell";
 import {useEffect, useState} from "react";
 
 export default function Minesweeper() {
-  const [settings] = useState({mines: 2, rows: 30, cols: 24});
-
+  const [settings] = useState({mines: 100, rows: 30, cols: 24});
   const [realBoard, setRealBoard] = useState([[""]]);
 
   const [land, setLand] = useState([[""]]);
@@ -96,7 +95,6 @@ export default function Minesweeper() {
     }
     const newArr = [...land];
     newArr[i][j] = land[i][j] === "" ? "f" : "";
-    console.log(newArr);
     setLand(newArr);
   };
 
@@ -144,31 +142,32 @@ export default function Minesweeper() {
   }, []);
 
   return (
-    <div className="flex justify-center w-full h-full bg-red-200 overflow-hidden">
-      <div className="flex flex-col justify-center items-center h-full w-3/4">
-        <div className="h-8" />
-        <div
-          className="flex flex-wrap bg-black max-w-2xl w-full"
-          style={{aspectRatio: `${settings.cols} / ${settings.rows}`}}
-        >
-          {land.map((o, i) => {
-            return o.map((e, j) => (
-              <div
-                className={`bg-slate-300 border-2 border-black aspect-square`}
-                style={{width: `${100 / settings.cols}%`}}
-                key={"land-" + i + j}
-                onClick={() => {
-                  updateArray({i, j});
-                }}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  flag({i, j});
-                }}
-              >
-                <Cell type={e} />
-              </div>
-            ));
-          })}
+    <div className="flex justify-center w-full h-full bg-EWhite overflow-hidden">
+      <div className="flex flex-col justify-center items-center h-full">
+        <div className="h-8">
+          {settings.mines - land.flat().filter((item) => item === "f").length}
+        </div>
+        <div className="flex flex-wrap bg-black max-w-xl w-full">
+          {land.map((o, i) => (
+            <div key={"row-" + i}>
+              {o.map((e, j) => (
+                <div
+                  className={`bg-slate-300 aspect-square`}
+                  style={{width: `${572 / settings.rows}px`}}
+                  key={"land-" + i + j}
+                  onClick={() => {
+                    updateArray({i, j});
+                  }}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    flag({i, j});
+                  }}
+                >
+                  <Cell type={e} number={(i + j) % 2} />
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>
