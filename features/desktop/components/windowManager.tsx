@@ -112,6 +112,7 @@ export default function WindowManager({
       <motion.div
         initial={{opacity: 0}}
         animate={{opacity: close ? 0 : 1}}
+        onAnimationStart={() => !close && mainRef.current!.focus()}
         onAnimationComplete={() => close && onClose()}
         id={title}
         ref={mainRef}

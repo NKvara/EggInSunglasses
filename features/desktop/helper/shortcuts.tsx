@@ -5,10 +5,10 @@ import Minesweeper from '@/features/desktop/apps/minesweeper/index';
 export const shortcuts = [
   {
     icon: "/images/desktop/web.png",
-    title: "about",
+    title: "About This Developer",
     app: <About />,
     init: {position: {x: 200, y: 200}},
-    minSize: {w: 400, h: 600}
+    minSize: {w: 600, h: 400}
   },
   {
     icon: "/images/desktop/web.png",

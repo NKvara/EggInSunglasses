@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Toaster } from "react-hot-toast";
 
 const darwin = localFont({
   src: "./fonts/darwin.otf",
@@ -28,6 +29,7 @@ export default function RootLayout({
         className={`antialiased ${pixel.className} ${darwin.variable} `}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
