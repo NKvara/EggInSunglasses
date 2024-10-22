@@ -43,4 +43,7 @@ export type initialPosition = {
     w: number;
   };
 };
+
+export type parentSize = {width: number; height: number};
+
 export type setInitialPosition = Dispatch<SetStateAction<initialPosition>>;

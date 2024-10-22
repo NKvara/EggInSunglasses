@@ -7,7 +7,7 @@ import {motion} from "framer-motion";
 import Toolbar from "@/features/desktop/components/toolbar";
 import {useInitials} from "@/features/desktop/components/hooks/setInitials";
 import {edgeSides, useEdge} from "@/features/desktop/components/hooks/isEdge";
-import {min} from "@/features/desktop/components/types";
+import {min, parentSize} from "@/features/desktop/components/types";
 import {useWindowResize} from "@/features/desktop/components/hooks/useWindowResize";
 import {useWindowDrag} from "@/features/desktop/components/hooks/useWindowDrag";
 import {useResizeCursor} from "@/features/desktop/components/hooks/useResizeCursor";
@@ -20,7 +20,8 @@ export default function WindowManager({
   min,
   onClose,
   gIndexCount,
-  setGIndexCount
+  setGIndexCount,
+  parentSize
 }: {
   children: ReactNode;
   mouseDown: boolean;
@@ -30,6 +31,7 @@ export default function WindowManager({
   onClose: () => void;
   gIndexCount: number;
   setGIndexCount: () => void;
+  parentSize: parentSize;
 }) {
   const [indexCount, setIndexCount] = useState(gIndexCount);
   const [windowSize, setWindowSize] = useState({
@@ -80,6 +82,7 @@ export default function WindowManager({
     mouseDown,
     mousePosition,
     moveEnable,
+    parentSize,
     setInitials,
     setMoveEnable,
     setWindowPosition

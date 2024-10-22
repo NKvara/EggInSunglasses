@@ -3,7 +3,8 @@ import {
   mousePosition,
   moveEnable,
   setMoveEnable,
-  setWindowPosition
+  setWindowPosition,
+  parentSize
 } from "@/features/desktop/components/types";
 import {useEffect} from "react";
 
@@ -15,6 +16,7 @@ interface props {
   setWindowPosition: setWindowPosition;
   mousePosition: mousePosition;
   initialPosition: initialPosition;
+  parentSize: parentSize;
 }
 
 export const useWindowDrag = ({
@@ -24,19 +26,37 @@ export const useWindowDrag = ({
   setMoveEnable,
   setWindowPosition,
   mousePosition,
-  initialPosition
+  initialPosition,
+  parentSize
 }: props) => {
   return useEffect(() => {
     if (moveEnable) {
       if (!mouseDown) {
         setInitials();
         setMoveEnable(false);
+      } else {
+        const defaultMoveX =
+          mousePosition.x + (initialPosition.div.x - initialPosition.cursor.x);
+        const defaultMoveY =
+          mousePosition.y + (initialPosition.div.y - initialPosition.cursor.y);
+
+        setWindowPosition({
+          x:
+            defaultMoveX <= 0
+              ? 0
+              : defaultMoveX + initialPosition.window.w >= parentSize.width
+              ? parentSize.width - initialPosition.window.w
+              : defaultMoveX,
+          y:
+            defaultMoveY <= 32
+              ? 32
+              : defaultMoveY + initialPosition.window.h >= parentSize.height
+              ? parentSize.height - initialPosition.window.h
+              : defaultMoveY
+        });
       }
-      setWindowPosition({
-        x: mousePosition.x + (initialPosition.div.x - initialPosition.cursor.x),
-        y: mousePosition.y + (initialPosition.div.y - initialPosition.cursor.y)
-      });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialPosition, mouseDown, mousePosition, moveEnable, setInitials]);
+  }, [mouseDown, mousePosition, moveEnable]);
 };
