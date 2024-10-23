@@ -2,12 +2,12 @@ const Cell = ({type, number}: {type: string; number: number}) => {
   switch (type) {
     case "":
       return (
-        <div
-          className={`w-full h-full ${number ? "bg-blue-400" : "bg-blue-500"}`}
-        />
+        <div className="w-full h-full bg-slate-300 border-l-slate-100 border-t-slate-100 border-b-slate-500 border-r-slate-500 border-[3px]" />
       );
     case "b":
-      return <div className="w-full h-full bg-red-400" />;
+      return (
+        <div className="w-full h-full bg-red-300 border-l-red-100 border-t-red-100 border-b-red-400 border-r-red-400 border-[3px]" />
+      );
     case "e":
       return (
         <div
@@ -17,7 +17,7 @@ const Cell = ({type, number}: {type: string; number: number}) => {
         />
       );
     case "f":
-      return <div className="w-full h-full bg-teal-400" />;
+      return <div className="w-full h-full bg-teal-300 border-l-teal-100 border-t-teal-100 border-b-teal-500 border-r-teal-500 border-[3px]" />;
     default:
       return (
         <div

@@ -8,7 +8,7 @@ export const shortcuts = [
     title: "About This Developer",
     app: <About />,
     init: {position: {x: 200, y: 200}},
-    minSize: {w: 600, h: 400}
+    minSize: {w: 600, h: 440}
   },
   {
     icon: "/images/desktop/web.png",
