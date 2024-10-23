@@ -16,10 +16,10 @@ export default function Reviews() {
         <button
           onClick={() => setIndex(index + 1 === reviews.length ? 0 : index + 1)}
         >
-          Next {">"}
+          <span className="underline underline-offset-2">Next</span> {">"}
         </button>
       </div>
-      <div>
+      <div className="bg-indigo-50/70">
         <div className="flex flex-col justify-center border border-black p-4 h-28">
           <p>"{reviews[index].review}"</p>
           <p className="text-right text-ERed">- {reviews[index].name}</p>

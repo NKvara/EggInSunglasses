@@ -2,7 +2,7 @@ import Cell from "@/features/desktop/apps/minesweeper/cell";
 import {useEffect, useState} from "react";
 
 export default function Minesweeper() {
-  const [settings] = useState({mines: 100, rows: 30, cols: 24});
+  const [settings] = useState({mines: 150, rows: 30, cols: 24});
   const [realBoard, setRealBoard] = useState([[""]]);
 
   const [land, setLand] = useState([[""]]);
@@ -68,7 +68,7 @@ export default function Minesweeper() {
       );
       if (rowIndex !== -1) {
         const colIndex = board[rowIndex].indexOf("n");
-        let bombAmout = 0;
+        let bombAmount = 0;
         directions.forEach((e) => {
           const ri = rowIndex + e[0];
           const ci = colIndex + e[1];
@@ -79,10 +79,10 @@ export default function Minesweeper() {
             ci !== board[0].length &&
             board[ri][ci] === "b"
           ) {
-            bombAmout++;
+            bombAmount++;
           }
         });
-        board[rowIndex][colIndex] = bombAmout.toString();
+        board[rowIndex][colIndex] = bombAmount.toString();
       }
     }
 
@@ -107,7 +107,13 @@ export default function Minesweeper() {
     newArr[i][j] = realBoard[i][j];
 
     if (newArr[i][j] === "b") {
-      alert("you are done for");
+      for (let k1 = 0; k1 < settings.rows; k1++) {
+        for (let k2 = 0; k2 < settings.cols; k2++) {
+          if (realBoard[k1][k2] === "b") {
+            newArr[k1][k2] = "b";
+          }
+        }
+      }
     } else if (newArr[i][j] === "c") {
       while (newArr.some((innerArray) => innerArray.includes("c"))) {
         const rowIndex = newArr.findIndex((innerArray) =>

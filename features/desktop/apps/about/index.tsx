@@ -1,6 +1,7 @@
 import Reviews from "@/features/desktop/apps/about/reviews";
 import TotalExperience from "@/features/desktop/apps/about/total";
 import CopyText from "@/features/shared/copyText";
+import {motion} from "framer-motion";
 import Image from "next/image";
 import React from "react";
 
@@ -8,7 +9,19 @@ export default function About() {
   return (
     <div className="bg-white w-full h-full">
       <div className="max-w-[600px]">
-        <div className="flex items-center p-4">
+        <div className="relative flex items-center p-4 overflow-hidden z-10">
+          <motion.div
+            className="absolute left-0 top-0 w-[400px] h-[400px] -z-10 opacity-30"
+            style={{backgroundImage: "url('/images/desktop/checker.png')"}}
+            initial={{scale: 2}}
+            animate={{x: ["8%", "50%"], y: ["8%", "50%"]}}
+            transition={{ 
+              duration: 60,
+              ease: "linear",
+              repeat: Infinity,
+              repeatType: "loop"
+            }}
+          />
           <div className="w-[64px] mt-1">
             <Image
               src="/images/desktop/mac-glasses.png"
