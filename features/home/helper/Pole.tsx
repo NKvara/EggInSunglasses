@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/features/lib/utils";
+import {cn} from "@/features/lib/utils";
 import {motion} from "framer-motion";
 import {Dispatch, SetStateAction, useState} from "react";
 
@@ -9,15 +9,19 @@ export const Pole = ({
   height,
   position,
   color,
+  outerClick,
   clickable,
-  SetAnimationEnd
+  setAnimationStart,
+  setAnimationEnd,
 }: {
   width?: number;
   height?: number;
   position: {top: number; lr: string};
-  color: "green" | "orange" | "blue" | "white";
+  color: string;
+  outerClick?: boolean;
   clickable?: boolean;
-  SetAnimationEnd?: Dispatch<SetStateAction<boolean>>;
+  setAnimationStart?: Dispatch<SetStateAction<boolean>>;
+  setAnimationEnd?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [click, setClick] = useState(false);
@@ -58,10 +62,21 @@ export const Pole = ({
   return (
     <motion.div
       className={cn(`absolute h-full ${position.lr}`)}
+      initial={{top: `${position.top + Math.random() * (80 - 64) + 64}rem`}}
       style={{top: `${position.top}rem`}}
-      animate={{top: click ? `${position.top + 16}rem` : `${position.top}rem`}}
-      transition={{ease: "easeInOut", duration: 3}}
-      onAnimationComplete={() => click && SetAnimationEnd && SetAnimationEnd(true)}
+      animate={{
+        top:
+          click || outerClick
+            ? `${position.top + Math.random() * (120 - 64) + 64}rem`
+            : `${position.top}rem`
+      }}
+      transition={{ease: "easeInOut", duration: 2}}
+      onAnimationStart={() =>
+        click && setAnimationStart && setAnimationStart(true)
+      }
+      onAnimationComplete={() =>
+        click && setAnimationEnd && setAnimationEnd(true)
+      }
     >
       <div
         className="relative h-full"

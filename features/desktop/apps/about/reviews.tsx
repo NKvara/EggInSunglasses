@@ -1,5 +1,4 @@
 import {reviews} from "@/features/desktop/apps/about/helper";
-import {motion} from "framer-motion";
 import {useEffect, useState} from "react";
 
 export default function Reviews() {
@@ -21,7 +20,7 @@ export default function Reviews() {
       </div>
       <div className="bg-indigo-50/70">
         <div className="flex flex-col justify-center border border-black p-4 h-28">
-          <p>"{reviews[index].review}"</p>
+          <p>&quot;{reviews[index].review}&quot;</p>
           <p className="text-right text-ERed">- {reviews[index].name}</p>
         </div>
       </div>

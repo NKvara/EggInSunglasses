@@ -9,14 +9,14 @@ export default function About() {
   return (
     <div className="bg-white w-full h-full">
       <div className="max-w-[600px]">
-        <div className="relative flex items-center p-4 overflow-hidden z-10">
+        <div className="relative flex items-center p-4 overflow-clip z-10">
           <motion.div
             className="absolute left-0 top-0 w-[400px] h-[400px] -z-10 opacity-30"
             style={{backgroundImage: "url('/images/desktop/checker.png')"}}
             initial={{scale: 2}}
             animate={{x: ["8%", "50%"], y: ["8%", "50%"]}}
             transition={{ 
-              duration: 60,
+              duration: 45,
               ease: "linear",
               repeat: Infinity,
               repeatType: "loop"

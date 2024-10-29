@@ -1,20 +1,7 @@
 export const reviews = [
   {
-    name: "Morty Wibbles",
-    review: "Great guy, saved 500 worms from drowning"
-  },
-  {
-    name: "Nathan Prank",
-    review:
-      "I dont know much about this front-end development thing, all i know is that this MAN owes me 10 dollars"
-  },
-  {
-    name: "Frank",
-    review: "hey :) i want to say that this, uh, mm, good"
-  },
-  {
     name: "Leon S. Kennedy",
-    review: "Where'd everyone go? to this awesome website?"
+    review: "Where'd everyone go? this awesome website?"
   },
   {
     name: "Dante",
@@ -23,5 +10,18 @@ export const reviews = [
   {
     name: "Android 16",
     review: "Don't let it be destroyed... Protect it for me... This Website..."
+  },
+  {
+    name: "Jake The Dog",
+    review: "This website is totally math, dude!"
+  },
+  {
+    name: "Garfield",
+    review: "I hate mondays, but I love this website"
+  },
+  {
+    name: "Aragorn",
+    review:
+      "I would have gone with this website to the end... into the very fires of Mordor"
   }
 ];

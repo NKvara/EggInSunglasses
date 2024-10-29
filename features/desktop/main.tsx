@@ -6,6 +6,7 @@ import {shortcuts} from "@/features/desktop/helper/shortcuts";
 import Image from "next/image";
 import {useEffect, useRef, useState} from "react";
 import {useResizeObserver} from "usehooks-ts";
+import {motion} from "framer-motion";
 
 export default function DesktopMain() {
   const [mouseDown, setMouseDown] = useState(false);
@@ -48,76 +49,83 @@ export default function DesktopMain() {
   };
 
   return (
-    <TopNavigation>
-      <div
-        ref={overlayDivRef}
-        className="w-svw h-svh flex flex-col justify-between bg-EWhite"
-        // style={{backgroundImage: `url('/images/desktop/cement.jpg')`}}
-      >
-        <div className="relative h-full w-full overflow-hidden p-6">
-          <div className="flex flex-col items-end h-full gap-8 pt-8">
-            {shortcuts.map((o, i) => {
-              // eslint-disable-next-line react-hooks/rules-of-hooks
-              const [isFocused, setIsFocused] = useState(false);
-              return (
-                <div
-                  tabIndex={i}
-                  key={o.title}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  className="flex flex-col justify-center items-center max-w-24 w-full h-16 gap-1 group select-none"
-                >
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      transition={{ease: "easeInOut", duration: 1}}
+      onAnimationComplete={() => handleClick(shortcuts[0])}
+    >
+      <TopNavigation>
+        <div
+          ref={overlayDivRef}
+          className="w-svw h-svh flex flex-col justify-between bg-EWhite bg-center bg-no-repeat"
+          style={{backgroundImage: `url('/images/desktop/bird.png')`}}
+        >
+          <div className="relative h-full w-full overflow-hidden p-6">
+            <div className="flex flex-col items-end h-full gap-8 pt-8">
+              {shortcuts.map((o, i) => {
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                const [isFocused, setIsFocused] = useState(false);
+                return (
                   <div
-                    className="relative w-8 aspect-square cursor-pointer"
-                    onDoubleClick={() => handleClick(o)}
+                    tabIndex={i}
+                    key={o.title}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    className="flex flex-col justify-center items-center max-w-24 w-full h-[72px] gap-1 group select-none"
                   >
-                    <Image
-                      src={o.icon}
-                      fill
-                      alt={o.title}
-                      style={{
-                        filter: isFocused
-                          ? "brightness(.5) sepia(100%) saturate(8)"
-                          : ""
-                      }}
-                    />
+                    <div
+                      className="relative w-8 aspect-square cursor-pointer"
+                      onDoubleClick={() => handleClick(o)}
+                    >
+                      <Image
+                        src={o.icon}
+                        fill
+                        alt={o.title}
+                        style={{
+                          filter: isFocused
+                            ? "brightness(.5) sepia(100%) saturate(8)"
+                            : ""
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="text-black text-center text-xs line-clamp-2 group-focus:bg-EOrange cursor-pointer"
+                      onDoubleClick={() => handleClick(o)}
+                    >
+                      {o.title}
+                    </div>
                   </div>
-                  <div
-                    className="text-black text-center text-xs line-clamp-2 group-focus:bg-EOrange cursor-pointer"
-                    onDoubleClick={() => handleClick(o)}
-                  >
-                    {o.title}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            {windows.map((o) => (
+              <WindowManager
+                key={o.title}
+                title={o.title}
+                mouseDown={mouseDown}
+                gIndexCount={gIndexCount}
+                parentSize={{height, width}}
+                setGIndexCount={() => setGIndexCount(gIndexCount + 1)}
+                init={{
+                  position: {x: o.init.position.x, y: o.init.position.y}
+                }}
+                min={{
+                  size: {w: o.minSize.w, h: o.minSize.h}
+                }}
+                onClose={() => {
+                  setWindows(windows.filter((obj) => obj.title !== o.title));
+                }}
+              >
+                {o.app}
+              </WindowManager>
+            ))}
           </div>
-          {windows.map((o) => (
-            <WindowManager
-              key={o.title}
-              title={o.title}
-              mouseDown={mouseDown}
-              gIndexCount={gIndexCount}
-              parentSize={{height, width}}
-              setGIndexCount={() => setGIndexCount(gIndexCount + 1)}
-              init={{
-                position: {x: o.init.position.x, y: o.init.position.y}
-              }}
-              min={{
-                size: {w: o.minSize.w, h: o.minSize.h}
-              }}
-              onClose={() => {
-                setWindows(windows.filter((obj) => obj.title !== o.title));
-              }}
-            >
-              {o.app}
-            </WindowManager>
-          ))}
-        </div>
-        {/* <div className="w-full h-12 bg-gradient-to-r from-slate-950/[0.7] via-slate-900/[0.7] to-slate-950/[0.7] backdrop-blur-3xl">
+          {/* <div className="w-full h-12 bg-gradient-to-r from-slate-950/[0.7] via-slate-900/[0.7] to-slate-950/[0.7] backdrop-blur-3xl">
         <div className="w-4 h-4 bg-white" />
       </div> */}
-      </div>
-    </TopNavigation>
+        </div>
+      </TopNavigation>
+    </motion.div>
   );
 }
